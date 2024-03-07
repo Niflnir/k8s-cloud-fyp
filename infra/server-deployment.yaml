@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: decoding-sdk-server
+  namespace: decoding-sdk
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: decoding-sdk-server
+  template:
+    metadata:
+      labels:
+        app: decoding-sdk-server
+    spec:
+      containers:
+      - name: decoding-sdk-server
+        image: lyvt/decoding-sdk:v2.0
+        command: ["/bin/sh", "-c"]
+        args:
+        - |-
+          /home/speechuser/start_master.sh -p 8010
+        ports:
+        - containerPort: 8010
+        volumeMounts:
+        - name: log-volume
+          mountPath: /home/speechuser/opt/logs
+      - name: log-parser
+        image: niflnir/log-parser-image:latest
+        volumeMounts:
+        - name: log-volume
+          mountPath: /opt/decoding-sdk-logs
+        ports:
+        - name: metrics
+          containerPort: 8080
+      volumes:
+      - name: log-volume
+        emptyDir: {}
+

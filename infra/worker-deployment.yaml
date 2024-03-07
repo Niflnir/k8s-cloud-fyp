@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: decoding-sdk-worker
+ namespace: decoding-sdk
+spec:
+ replicas: 1
+ selector:
+    matchLabels:
+      app: decoding-sdk-worker
+ template:
+    metadata:
+      labels:
+        app: decoding-sdk-worker
+    spec:
+      containers:
+      - name: decoding-sdk-worker
+        image: lyvt/decoding-sdk:v2.0
+        # command: ["/bin/bash", "-c"]
+        # args:
+        # - |
+        #   while true; do sleep 1; done
+        command: ["/home/speechuser/start_worker.sh"]
+        args: ["-m", "decoding-sdk-server", "-p", "8010"]
+        env:
+        - name: INSTANCE_NUM
+          value: "2"
+        - name: MASTER
+          value: "decoding-sdk-server:8010"
+        - name: MODEL_DIR
+          value: "Abax_English_ASR_0822"
+        volumeMounts:
+        - name: models-volume
+          mountPath: "/opt/models"
+      volumes:
+      - name: models-volume
+        persistentVolumeClaim:
+          claimName: my-pvc
