@@ -1,0 +1,11 @@
+certifi==2024.2.2
+charset-normalizer==3.3.2
+click==8.1.7
+gTTS==2.5.1
+idna==3.6
+prometheus_client==0.20.0
+PyAudio==0.2.14
+ratelimiter==1.2.0.post0
+requests==2.31.0
+urllib3==2.2.1
+ws4py==0.5.1
