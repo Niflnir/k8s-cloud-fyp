@@ -55,4 +55,4 @@ spec:
       path: /metrics
   selector:
     matchLabels:
-      app: decoding-sdk-server
+      app: log-parser

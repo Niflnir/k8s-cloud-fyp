@@ -4,7 +4,6 @@ metadata:
   name: decoding-sdk-server-service
   namespace: monitoring
   labels:
-    job: decoding-sdk-server-job
     app: decoding-sdk-server
 spec:
   selector:
@@ -15,4 +14,21 @@ spec:
       targetPort: 8010
       nodePort: 30080
   type: NodePort
-
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: log-parser-service
+  namespace: monitoring
+  labels:
+    job: log-parser-job
+    app: log-parser
+spec:
+  type: ClusterIP
+  selector:
+    app: decoding-sdk-server
+  ports:
+    - name: web
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
