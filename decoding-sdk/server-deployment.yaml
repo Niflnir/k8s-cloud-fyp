@@ -1,8 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: decoding-sdk-server
-  namespace: decoding-sdk
+  name: decoding-sdk-server-deployment
+  namespace: monitoring
+  labels:
+    app: decoding-sdk-server
 spec:
   replicas: 1
   selector:
@@ -36,4 +38,21 @@ spec:
       volumes:
       - name: log-volume
         emptyDir: {}
-
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: decoding-sdk-server-service-monitor
+  namespace: monitoring
+  labels:
+    prometheus: main
+    app: prometheus
+spec:
+  jobLabel: job
+  endpoints:
+    - interval: 30s
+      port: web
+      path: /metrics
+  selector:
+    matchLabels:
+      app: decoding-sdk-server

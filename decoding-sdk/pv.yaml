@@ -4,7 +4,7 @@ metadata:
  name: my-pv
 spec:
  capacity:
-    storage: 1Gi # Adjust the size according to your needs
+    storage: 1Gi
  volumeMode: Filesystem
  accessModes:
     - ReadWriteOnce

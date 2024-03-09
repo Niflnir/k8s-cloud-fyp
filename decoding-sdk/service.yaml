@@ -1,15 +1,18 @@
 apiVersion: v1
 kind: Service
 metadata:
- name: decoding-sdk-server
- namespace: decoding-sdk
-spec:
- selector:
+  name: decoding-sdk-server-service
+  namespace: monitoring
+  labels:
+    job: decoding-sdk-server-job
     app: decoding-sdk-server
- ports:
+spec:
+  selector:
+    app: decoding-sdk-server
+  ports:
     - protocol: TCP
       port: 8010
       targetPort: 8010
-      nodePort: 30080 # Example NodePort
- type: NodePort
+      nodePort: 30080
+  type: NodePort
 
