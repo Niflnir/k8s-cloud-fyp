@@ -1,13 +1,10 @@
-from prometheus_client import start_http_server, Summary, Counter, Gauge
 import time
 import re
+from prometheus_client import start_http_server, Counter, Gauge
 
-
+log_file_path = '/opt/decoding-sdk-logs/master_server.log'
 server_http_requests_total = Counter('server_http_requests_total', 'Total number of http requests received by the server')
 worker_count_metric = Gauge('worker_count', 'Number of speech workers available')
-
-# Path to the log file
-log_file_path = '/opt/decoding-sdk-logs/master_server.log'
 
 
 def extract_worker_count(log_line):
