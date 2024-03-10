@@ -1,6 +1,6 @@
 import time
 import re
-from prometheus_client import start_http_server, Counter, Gauge
+from prometheus_client import start_http_server, disable_created_metrics, Counter, Gauge
 
 log_file_path = '/opt/decoding-sdk-logs/master_server.log'
 SERVER_REQUESTS = Counter('server_requests', 'Number of requests received by the server')
@@ -48,6 +48,7 @@ def parse_log(log_line):
 
 
 def main():
+    disable_created_metrics()
     start_http_server(8080)
     with open(log_file_path, 'r') as log_file:
         while True:
