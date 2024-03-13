@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
- name: my-pv
+  name: my-pv
 spec:
- capacity:
+  capacity:
     storage: 1Gi
- volumeMode: Filesystem
- accessModes:
+  volumeMode: Filesystem
+  accessModes:
     - ReadWriteOnce
- persistentVolumeReclaimPolicy: Retain
- storageClassName: standard
- hostPath:
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: standard
+  hostPath:
     path: "/opt/models"
