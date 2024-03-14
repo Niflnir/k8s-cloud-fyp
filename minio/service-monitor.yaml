@@ -13,6 +13,9 @@ spec:
       port: minio-api
       path: /minio/v2/metrics/bucket
       scheme: http
+      bearerTokenSecret:
+        name: minio-prometheus-token
+        key: token
   selector:
     matchLabels:
       app: minio
