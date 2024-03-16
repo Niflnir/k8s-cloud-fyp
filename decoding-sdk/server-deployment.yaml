@@ -24,17 +24,3 @@ spec:
           /home/speechuser/start_master.sh -p 8010
         ports:
         - containerPort: 8010
-        volumeMounts:
-        - name: log-volume
-          mountPath: /home/speechuser/opt/logs
-      - name: log-parser
-        image: niflnir/log-parser-image:latest
-        volumeMounts:
-        - name: log-volume
-          mountPath: /opt/decoding-sdk-logs
-        ports:
-        - name: metrics
-          containerPort: 8080
-      volumes:
-      - name: log-volume
-        emptyDir: {}

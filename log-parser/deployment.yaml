@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: log-parser-deployment
+  namespace: monitoring
+  labels:
+    app: log-parser
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: log-parser
+  template:
+    metadata:
+      labels:
+        app: log-parser
+    spec:
+      containers:
+      - name: log-parser
+        image: niflnir/log-parser-image:latest
+        ports:
+        - name: metrics
+          containerPort: 8080
