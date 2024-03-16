@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . /app
 
 # Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir prometheus_client
+RUN pip install --no-cache-dir prometheus_client kubernetes
 
 # Make port 8080 available to the world outside this container
 EXPOSE 8080
