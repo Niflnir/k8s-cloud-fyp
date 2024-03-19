@@ -1,4 +1,5 @@
 import re
+import concurrent.futures
 from kubernetes import client, config, watch
 from prometheus_client import start_http_server, disable_created_metrics, Counter, Gauge, Histogram
 
@@ -8,6 +9,9 @@ DECODING_REQUESTS_SUCCESSFUL = Counter('decoding_requests_successful', 'Number o
 SPEECH_WORKER_COUNT = Gauge('speech_worker_count', 'Number of speech workers currently available')
 REQUEST_DURATION = Histogram('request_duration_milliseconds', 'Time taken to complete a request', ['request_id'])
 REQUEST_LATENCY = Histogram('request_latency_milliseconds', 'Request latency in milliseconds')
+AUDIO_LENGTH = Histogram('audio_length_milliseconds', 'Total length of the audio in milliseconds', ['request_id'])
+
+previous_log_line = ''
 
 
 def calculate_duration_milliseconds(start_time, end_time):
@@ -48,6 +52,12 @@ def update_request_count_and_duration_metrics(log_line):
 
 
 def update_decoding_requests_metrics(log_line):
+    global previous_log_line
+
+    if (log_line == previous_log_line):
+        return
+
+    previous_log_line = log_line
     pattern = r"INFO.* Sending event \{'status': (\d+).*"
     match = re.search(pattern, log_line)
     if match:
@@ -70,31 +80,74 @@ def update_speech_worker_count_metric(log_line):
         SPEECH_WORKER_COUNT.set(int(match.group(1)))
 
 
-def parse_log(log_line):
+def update_real_time_factor_metric(log_line):
+    global start_audio_time
+    global end_audio_time
+
+    request_start_pattern = re.compile(r'.*(\d{2}:\d{2}:\d{2},\d{3}).* Get Audio File Sample Rate from Header.*')
+    request_start_match = request_start_pattern.search(log_line)
+    if request_start_match:
+        start_audio_time = request_start_match.group(1)
+        return
+
+    request_end_pattern = re.compile(r'.*(\d{2}:\d{2}:\d{2},\d{3}).* received EOS.*')
+    request_end_match = request_end_pattern.search(log_line)
+    if request_end_match:
+        end_audio_time = request_end_match.group(1)
+        return
+
+    request_pause_pattern = re.compile(r'.*(\w+-\w+-\w+-\w+-\w+).* Pause the instance.*')
+    request_pause_match = request_pause_pattern.search(log_line)
+    if request_pause_match:
+        pause_request_id = request_pause_match.group(1) 
+        duration_milliseconds = calculate_duration_milliseconds(start_audio_time, end_audio_time)
+        AUDIO_LENGTH.labels(request_id=pause_request_id).observe(duration_milliseconds)
+
+
+def parse_server_log(log_line):
     update_speech_worker_count_metric(log_line)
     update_decoding_requests_metrics(log_line)
     update_request_count_and_duration_metrics(log_line)
     update_latency_metric(log_line)
 
 
+def parse_worker_log(log_line):
+    update_real_time_factor_metric(log_line)
+
+
+def parse_logs():
+    config.load_incluster_config()
+    v1 = client.CoreV1Api()
+    namespace = 'monitoring'
+
+    def stream_logs(container):
+        w = watch.Watch()
+
+        if container == 'decoding-sdk-server':
+            ret = v1.list_namespaced_pod(namespace=namespace, label_selector='app=decoding-sdk-server')
+            pod = ret.items[0]
+            pod_name = pod.metadata.name
+            for log_line in w.stream(v1.read_namespaced_pod_log, name=pod_name, namespace=namespace, container=container, tail_lines=1, follow=True):
+                parse_server_log(log_line)
+
+        elif container == 'decoding-sdk-worker':
+            ret = v1.list_namespaced_pod(namespace=namespace, label_selector='app=decoding-sdk-worker')
+            pod = ret.items[0]
+            pod_name = pod.metadata.name
+            for log_line in w.stream(v1.read_namespaced_pod_log, name=pod_name, namespace=namespace, container=container, tail_lines=1, follow=True):
+                parse_worker_log(log_line)
+
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = []
+        futures.append(executor.submit(stream_logs, 'decoding-sdk-server'))
+        futures.append(executor.submit(stream_logs, 'decoding-sdk-worker'))
+        concurrent.futures.wait(futures)
+
+
 def main():
     disable_created_metrics()
     start_http_server(8080)
-
-    config.load_incluster_config()
-    v1 = client.CoreV1Api()
-
-    label_selector = 'app=decoding-sdk-server'
-    namespace = 'monitoring'
-    container = 'decoding-sdk-server'
-
-    ret = v1.list_namespaced_pod(namespace=namespace, label_selector=label_selector)
-
-    pod = ret.items[0]
-    pod_name = pod.metadata.name
-    w = watch.Watch()
-    for log_line in w.stream(v1.read_namespaced_pod_log, name=pod_name, namespace=namespace, container=container, tail_lines=1, follow=True):
-        parse_log(log_line)
+    parse_logs()
 
 
 if __name__ == "__main__":
