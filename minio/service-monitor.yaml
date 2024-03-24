@@ -14,7 +14,7 @@ spec:
       path: /minio/v2/metrics/bucket
       scheme: http
       bearerTokenSecret:
-        name: minio-prometheus-token
+        name: minio-bearer-token
         key: token
   selector:
     matchLabels:
