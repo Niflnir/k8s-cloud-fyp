@@ -8,10 +8,11 @@ DECODING_REQUESTS_FAILED = Counter('decoding_requests_failed', 'Number of failed
 DECODING_REQUESTS_SUCCESSFUL = Counter('decoding_requests_successful', 'Number of successful decoding requests')
 SPEECH_WORKER_COUNT = Gauge('speech_worker_count', 'Number of speech workers currently available')
 REQUEST_DURATION = Histogram('request_duration_milliseconds', 'Time taken to complete a request', ['request_id'])
-REQUEST_LATENCY = Histogram('request_latency_milliseconds', 'Request latency in milliseconds')
+LATENCY = Histogram('latency_milliseconds', 'Latency in milliseconds', ['request_id'])
 AUDIO_LENGTH = Histogram('audio_length_milliseconds', 'Total length of the audio in milliseconds', ['request_id'])
 
 previous_log_line = ''
+request_dict = {}
 
 
 def calculate_duration_milliseconds(start_time, end_time):
@@ -22,12 +23,33 @@ def calculate_duration_milliseconds(start_time, end_time):
     return (end_seconds - start_seconds) * 1000 + (int(end_time_parts[1]) - int(start_time_parts[1]))
 
 
-def update_latency_metric(log_line):
-    pattern = r".*101 GET.*?(\d+\.\d+)ms"
-    match = re.search(pattern, log_line)
-    if match:
-        latency_milliseconds = float(match.group(1))
-        REQUEST_LATENCY.observe(latency_milliseconds)
+def update_latency_metric_server(log_line):
+    sending_event_pattern = re.compile(r'INFO.* (\d{2}:\d{2}:\d{2},\d{3}) (\w+-\w+-\w+-\w+-\w+): Sending event.*')
+    connection_close_pattern = re.compile(r'INFO.* (\d{2}:\d{2}:\d{2},\d{3}) (\w+-\w+-\w+-\w+-\w+): Handling on_connection_close.*')
+
+    sending_event_match = sending_event_pattern.search(log_line)
+    if sending_event_match:
+        sending_event_time, request_id = sending_event_match.groups()
+        if request_id in request_dict:
+            duration_milliseconds = calculate_duration_milliseconds(request_dict.pop(request_id, None), sending_event_time)
+            LATENCY.labels(request_id=request_id).observe(duration_milliseconds)
+        return
+
+    connection_close_match = connection_close_pattern.search(log_line)
+    if connection_close_match:
+        connection_close_time, request_id = connection_close_match.groups()
+        if request_id in request_dict:
+            duration_milliseconds = calculate_duration_milliseconds(request_dict.pop(request_id, None), connection_close_time)
+            LATENCY.labels(request_id=request_id).observe(duration_milliseconds)
+
+
+def update_latency_metric_worker(log_line):
+    pause_instance_pattern = re.compile(r'.*(\d{2}:\d{2}:\d{2},\d{3}).* (\w+-\w+-\w+-\w+-\w+): Pause the instance.*')
+    pause_instance_match = pause_instance_pattern.search(log_line)
+
+    if pause_instance_match:
+        pause_instance_time, request_id = pause_instance_match.groups()
+        request_dict[request_id] = pause_instance_time
 
 
 def update_request_count_and_duration_metrics(log_line):
@@ -108,11 +130,12 @@ def parse_server_log(log_line):
     update_speech_worker_count_metric(log_line)
     update_decoding_requests_metrics(log_line)
     update_request_count_and_duration_metrics(log_line)
-    update_latency_metric(log_line)
+    update_latency_metric_server(log_line)
 
 
 def parse_worker_log(log_line):
     update_real_time_factor_metric(log_line)
+    update_latency_metric_worker(log_line)
 
 
 def parse_logs():
