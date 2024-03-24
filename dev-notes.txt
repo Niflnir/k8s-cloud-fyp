@@ -1,6 +1,6 @@
 Make sure prometheus-operated have targets after applying prometheus folder
 Need to deploy minio and configure object store before applying thanos folder
-Run both receiver-1 & reciever-write-service together
+Run receiver folder after thanos folder
 
 Grafana
 1. Create folder grafana-pv on local machine (create in a directory that will be persisted after reboot)
