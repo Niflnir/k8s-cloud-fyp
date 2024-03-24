@@ -1,4 +1,3 @@
----
 apiVersion: monitoring.coreos.com/v1
 kind: Prometheus
 metadata:
@@ -7,18 +6,10 @@ metadata:
 spec:
   version: v2.50.1
   serviceAccountName: prometheus
-  podMonitorSelector:
-    matchLabels:
-      prometheus: main
-  podMonitorNamespaceSelector:
-    matchLabels:
-      monitoring: prometheus
-  serviceMonitorSelector:
-    matchLabels:
-      prometheus: main
-  serviceMonitorNamespaceSelector:
-    matchLabels:
-      monitoring: prometheus
+  podMonitorSelector: {}
+  podMonitorNamespaceSelector: {}
+  serviceMonitorSelector: {}
+  serviceMonitorNamespaceSelector: {}
   resources:
     requests:
       cpu: 100m
