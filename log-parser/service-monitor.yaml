@@ -1,7 +1,7 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: decoding-sdk-server-service-monitor
+  name: log-parser-service-monitor
   namespace: monitoring
   labels:
     prometheus: main
