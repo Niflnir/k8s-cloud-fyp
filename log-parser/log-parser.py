@@ -102,7 +102,7 @@ def update_speech_worker_count_metric(log_line):
         SPEECH_WORKER_COUNT.set(int(match.group(1)))
 
 
-def update_real_time_factor_metric(log_line):
+def update_audio_length_metric(log_line):
     global start_audio_time
     global end_audio_time
 
@@ -134,7 +134,7 @@ def parse_server_log(log_line):
 
 
 def parse_worker_log(log_line):
-    update_real_time_factor_metric(log_line)
+    update_audio_length_metric(log_line)
     update_latency_metric_worker(log_line)
 
 
