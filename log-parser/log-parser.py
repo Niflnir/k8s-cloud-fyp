@@ -1,14 +1,14 @@
 import re
 import concurrent.futures
 from kubernetes import client, config, watch
-from prometheus_client import start_http_server, disable_created_metrics, Counter, Gauge, Histogram
+from prometheus_client import start_http_server, disable_created_metrics, Counter, Gauge, Histogram, Summary
 
 SERVER_REQUESTS = Counter('server_requests', 'Number of requests received by the server')
 DECODING_REQUESTS_FAILED = Counter('decoding_requests_failed', 'Number of failed decoding requests')
 DECODING_REQUESTS_SUCCESSFUL = Counter('decoding_requests_successful', 'Number of successful decoding requests')
 SPEECH_WORKER_COUNT = Gauge('speech_worker_count', 'Number of speech workers currently available')
 REQUEST_DURATION = Histogram('request_duration_milliseconds', 'Time taken to complete a request', ['request_id'])
-LATENCY = Histogram('latency_milliseconds', 'Latency in milliseconds', ['request_id'])
+LATENCY = Summary('latency_milliseconds', 'Latency in milliseconds', ['request_id'])
 AUDIO_LENGTH = Histogram('audio_length_milliseconds', 'Total length of the audio in milliseconds', ['request_id'])
 
 previous_log_line = ''
