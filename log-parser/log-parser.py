@@ -13,6 +13,7 @@ AUDIO_LENGTH = Histogram('audio_length_milliseconds', 'Total length of the audio
 
 previous_log_line = ''
 request_dict = {}
+decoding_requests_dict = {}
 
 
 def calculate_duration_milliseconds(start_time, end_time):
@@ -80,19 +81,22 @@ def update_decoding_requests_metrics(log_line):
         return
 
     previous_log_line = log_line
-    pattern = r"INFO.* Sending event \{'status': (\d+).*"
-    match = re.search(pattern, log_line)
-    if match:
-        status = int(match.group(1))
+    sending_event_pattern = re.compile(r"INFO.* (\w+-\w+-\w+-\w+-\w+).* Sending event \{'status': (\d+).*")
+    sending_event_match = sending_event_pattern.search(log_line)
+    if sending_event_match:
+        request_id, status = sending_event_match.groups()
         # Status code (integer):
         # 0: Success. Recognition is successful and results sent.
         # 1: No speech. The server sends a 'status':1 when it detects more than 10s of audio without a speaker, and ends the session.
         # 2: Aborted. Recognition was aborted.
         # 9: Not available. All recognizer processes are currently in use and recognition cannot be performed.
-        if status == 0: 
-            DECODING_REQUESTS_SUCCESSFUL.inc()
-        else:
-            DECODING_REQUESTS_FAILED.inc()
+        if request_id not in decoding_requests_dict:
+            if status == '0':
+                    decoding_requests_dict[request_id] = True
+                    DECODING_REQUESTS_SUCCESSFUL.inc()
+            else:
+                    decoding_requests_dict[request_id] = True
+                    DECODING_REQUESTS_FAILED.inc()
 
 
 def update_speech_worker_count_metric(log_line):
