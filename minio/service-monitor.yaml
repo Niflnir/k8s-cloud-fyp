@@ -11,7 +11,7 @@ spec:
   endpoints:
     - interval: 30s
       port: minio-api
-      path: /minio/v2/metrics/bucket
+      path: /minio/v2/metrics/cluster
       scheme: http
       bearerTokenSecret:
         name: minio-bearer-token
