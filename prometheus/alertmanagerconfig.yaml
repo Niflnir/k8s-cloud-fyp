@@ -1,0 +1,31 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: alert-config
+  labels:
+    resource: prometheus
+spec:
+  route:
+    groupBy: ["severity"]
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 12h
+    receiver: 'gmail-receiver'
+  receivers:
+    - name: 'gmail-receiver'
+      emailConfigs:
+      - to: '<your-gmail>'
+        from: '<your-gmail>'
+        smarthost: 'smtp.gmail.com:587'
+        authUsername: '<your-gmail>'
+        authPassword:
+          name: 'gmail-auth'
+          key: 'password'
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: gmail-auth
+type: Opaque
+stringData:
+  password: '<your-password>'
