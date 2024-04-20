@@ -10,6 +10,12 @@ spec:
   podMonitorNamespaceSelector: {}
   serviceMonitorSelector: {}
   serviceMonitorNamespaceSelector: {}
+  alerting: 
+    alertmanagers:
+    - namespace: monitoring
+      name: alertmanager-operated
+      port: 9093
+  ruleSelector: {}
   resources:
     requests:
       cpu: 100m
