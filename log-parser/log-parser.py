@@ -7,13 +7,15 @@ SERVER_REQUESTS = Counter('server_requests', 'Number of requests received by the
 DECODING_REQUESTS_FAILED = Counter('decoding_requests_failed', 'Number of failed decoding requests')
 DECODING_REQUESTS_SUCCESSFUL = Counter('decoding_requests_successful', 'Number of successful decoding requests')
 SPEECH_WORKER_COUNT = Gauge('speech_worker_count', 'Number of speech workers currently available')
-REQUEST_DURATION = Histogram('request_duration_milliseconds', 'Time taken to complete a request', ['request_id'])
-LATENCY = Summary('latency_milliseconds', 'Latency in milliseconds', ['request_id'])
-AUDIO_LENGTH = Histogram('audio_length_milliseconds', 'Total length of the audio in milliseconds', ['request_id'])
+REQUEST_DURATION = Histogram('request_duration_milliseconds', 'Time taken to complete a request', buckets=[100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, float('inf')])
+LATENCY = Histogram('latency_milliseconds', 'Latency in milliseconds', buckets=[30, 60, 90, 120, 150, 180, 210, 240, 270, 300, float('inf')])
+AUDIO_LENGTH = Histogram('audio_length_milliseconds', 'Total length of the audio in milliseconds')
+REAL_TIME_FACTOR = Histogram('real_time_factor', 'Real Time Factor of decoding request')
 
 previous_log_line = ''
 request_dict = {}
 decoding_requests_dict = {}
+real_time_factor_dict = {}
 
 
 def calculate_duration_milliseconds(start_time, end_time):
@@ -33,7 +35,7 @@ def update_latency_metric_server(log_line):
         sending_event_time, request_id = sending_event_match.groups()
         if request_id in request_dict:
             duration_milliseconds = calculate_duration_milliseconds(request_dict.pop(request_id, None), sending_event_time)
-            LATENCY.labels(request_id=request_id).observe(duration_milliseconds)
+            LATENCY.observe(duration_milliseconds)
         return
 
     connection_close_match = connection_close_pattern.search(log_line)
@@ -41,7 +43,7 @@ def update_latency_metric_server(log_line):
         connection_close_time, request_id = connection_close_match.groups()
         if request_id in request_dict:
             duration_milliseconds = calculate_duration_milliseconds(request_dict.pop(request_id, None), connection_close_time)
-            LATENCY.labels(request_id=request_id).observe(duration_milliseconds)
+            LATENCY.observe(duration_milliseconds)
 
 
 def update_latency_metric_worker(log_line):
@@ -71,7 +73,12 @@ def update_request_count_and_duration_metrics(log_line):
         end_time, end_request_id = request_end_match.groups()
 
         duration_milliseconds = calculate_duration_milliseconds(start_time, end_time)
-        REQUEST_DURATION.labels(request_id=end_request_id).observe(duration_milliseconds)
+        if end_request_id in real_time_factor_dict:
+            REAL_TIME_FACTOR.observe(duration_milliseconds / real_time_factor_dict.pop(end_request_id, None))
+        else:
+            real_time_factor_dict[end_request_id] = duration_milliseconds
+
+        REQUEST_DURATION.observe(duration_milliseconds)
 
 
 def update_decoding_requests_metrics(log_line):
@@ -125,9 +132,14 @@ def update_audio_length_metric(log_line):
     request_pause_pattern = re.compile(r'.*(\w+-\w+-\w+-\w+-\w+).* Pause the instance.*')
     request_pause_match = request_pause_pattern.search(log_line)
     if request_pause_match:
-        pause_request_id = request_pause_match.group(1) 
+        pause_request_id = request_pause_match.group(1)
         duration_milliseconds = calculate_duration_milliseconds(start_audio_time, end_audio_time)
-        AUDIO_LENGTH.labels(request_id=pause_request_id).observe(duration_milliseconds)
+        if pause_request_id in real_time_factor_dict:
+            REAL_TIME_FACTOR.observe(real_time_factor_dict.pop(pause_request_id, None), duration_milliseconds)
+        else:
+            real_time_factor_dict[pause_request_id] = duration_milliseconds
+
+        AUDIO_LENGTH.observe(duration_milliseconds)
 
 
 def parse_server_log(log_line):
