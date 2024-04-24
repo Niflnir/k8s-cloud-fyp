@@ -9,8 +9,7 @@ DECODING_REQUESTS_SUCCESSFUL = Counter('decoding_requests_successful', 'Number o
 SPEECH_WORKER_COUNT = Gauge('speech_worker_count', 'Number of speech workers currently available')
 REQUEST_DURATION = Histogram('request_duration_milliseconds', 'Time taken to complete a request', buckets=[100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, float('inf')])
 LATENCY = Histogram('latency_milliseconds', 'Latency in milliseconds', buckets=[30, 60, 90, 120, 150, 180, 210, 240, 270, 300, float('inf')])
-AUDIO_LENGTH = Histogram('audio_length_milliseconds', 'Total length of the audio in milliseconds')
-REAL_TIME_FACTOR = Histogram('real_time_factor', 'Real Time Factor of decoding request')
+REAL_TIME_FACTOR = Histogram('real_time_factor', 'Real Time Factor of decoding request', buckets=[1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, float('inf')])
 
 previous_log_line = ''
 request_dict = {}
@@ -129,17 +128,15 @@ def update_audio_length_metric(log_line):
         end_audio_time = request_end_match.group(1)
         return
 
-    request_pause_pattern = re.compile(r'.*(\w+-\w+-\w+-\w+-\w+).* Pause the instance.*')
+    request_pause_pattern = re.compile(r'.* (\w+-\w+-\w+-\w+-\w+).* Pause the instance.*')
     request_pause_match = request_pause_pattern.search(log_line)
     if request_pause_match:
         pause_request_id = request_pause_match.group(1)
         duration_milliseconds = calculate_duration_milliseconds(start_audio_time, end_audio_time)
         if pause_request_id in real_time_factor_dict:
-            REAL_TIME_FACTOR.observe(real_time_factor_dict.pop(pause_request_id, None), duration_milliseconds)
+            REAL_TIME_FACTOR.observe(real_time_factor_dict.pop(pause_request_id, None) / duration_milliseconds)
         else:
             real_time_factor_dict[pause_request_id] = duration_milliseconds
-
-        AUDIO_LENGTH.observe(duration_milliseconds)
 
 
 def parse_server_log(log_line):
