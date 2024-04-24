@@ -1,0 +1,41 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    release: prometheus
+  name: decoding-sdk-rules
+spec:
+  groups:
+    - name: critical-group
+      rules:
+        - alert: InstanceDown
+          expr: up == 0
+          for: 0m
+          labels:
+            severity: critical
+          annotations:
+            summary: Prometheus target down {{ $labels.instance }}
+    - name: moderate-group
+      rules:
+        - alert: HighRequestFailure
+          expr: sum(increase(decoding_requests_failed_total[5m])) 
+          for: 5m
+          labels:
+            severity: moderate
+          annotations:
+            summary: High number of failed requests on {{ $labels.instance }}
+            description: "The number of failed requests is more than 10 in the past 5 minutes."
+        - alert: HighRequestlatency
+          expr: histogram_quantile(0.5, sum(latency_milliseconds_bucket) by (le)) > 1.5
+          for: 5m
+          labels:
+            severity: moderate
+          annotations:
+            summary: High request latency on {{ $labels.instance }}
+        - alert: HighRealTimeFactor
+          expr: histogram_quantile(0.5, sum(real_time_factor_bucket) by (le)) > 1.5
+          for: 5m
+          labels:
+            severity: moderate
+          annotations:
+            summary: High real time factor on {{ $labels.instance }}
