@@ -101,7 +101,7 @@ Run `kubectl get all` and wait till the all the objects are up. The `monitoring`
 
 ![image](https://github.com/Niflnir/k8s-cloud-fyp/assets/70419463/50a15f07-1af4-47cb-966b-b6f696671601)
 
-*Note: If the storegateway pod is failing to start, make sure the bucket name in `prometheus/objectstore.yaml` matches the bucket name that was created in MinIO. Also make sure that the access and secret keys match the ones you created earlier. If you forgot to save the access and secret keys earlier, just create a new pair and update `prometheus/objectstore.yaml` accordingly.
+*Note: If the storegateway pod is failing to start, make sure the bucket name in `prometheus/objectstore.yaml` matches the bucket name that was created in MinIO. Also make sure that the access and secret keys match the ones you created earlier. If you forgot to save the access and secret keys earlier, just create a new pair and update `prometheus/objectstore.yaml` accordingly
 
 Apply Thanos Receiver folder
 
@@ -113,11 +113,11 @@ kubectl apply -f receiver
 
 Port forward Thanos Querier service
 ```
-# If your Prometheus Operator is still running on 9090, port forward to separate port instead
+# If your Prometheus Operator is still running on 9090, port forward to a separate port instead
 kubectl port-forward svc/querier 9090
 ```
 
-Visit `localhost:9090` and navigate to `Stores`. 
+Visit `localhost:9090` and navigate to `Stores`
 
 You should see 1 Thanos Receiver and 1 Thanos Store Gateway that are both up:
 
@@ -129,5 +129,5 @@ Navigate to `Graph` and try to query for `prometheus_http_requests_total` metric
 
 If this works it means that the Thanos Querier is successfully retrieving metrics from the Thanos Receiver! 
 
-*Note: Thanos Receiver by default uploads to the MinIO bucket every 2 hours. To test whether the Thanos Querier is successfully retrieving metrics from the Thanos Store Gateway, just observe whether your are able to query for metrics older than 2 hours.
+*Note: Thanos Receiver by default uploads to the MinIO bucket every 2 hours. To test whether the Thanos Querier is successfully retrieving metrics from the Thanos Store Gateway, just observe whether your are able to query for metrics older than 2 hours
 
