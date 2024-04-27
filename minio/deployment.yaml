@@ -52,6 +52,8 @@ spec:
                 secretKeyRef:
                   name: minio
                   key: rootPassword
+            - name: MINIO_PROMETHEUS_AUTH_TYPE
+              value: "public"
           resources:
             requests:
               cpu: 100m
