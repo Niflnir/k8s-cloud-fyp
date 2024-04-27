@@ -1,4 +1,3 @@
----
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -60,11 +59,6 @@ spec:
             - --objstore.config-file=/conf/objstore.yml
             - --remote-write.address=0.0.0.0:10908 # Used by prometheus to send metrics to receiver
             - --receive.local-endpoint=receiver-store-1.monitoring.svc.cluster.local:10907 # Used by querier to fetch metrics from receiver
-            # - --receive.hashrings-algorithm=ketama
-            # - --receive.hashrings-file=/conf/hashring.json
-            # - --remote-write.server-tls-cert=/secrets/tls.crt
-            # - --remote-write.server-tls-key=/secrets/tls.key
-            # - --remote-write.server-tls-client-ca=/secrets/ca.crt
           ports:
             - name: http
               containerPort: 10909
@@ -106,21 +100,10 @@ spec:
               subPath: objstore.yml
             - name: data
               mountPath: /data
-            # - name: receiver-tls
-            #   mountPath: /secrets
-            # - name: hashring
-            #   mountPath: /conf/hashring.json
-            #   subPath: hashring.json
       volumes:
         - name: objstore
           secret:
             secretName: objstore
-        # - name: receiver-tls
-        #   secret:
-        #     secretName: receiver-tls
-        # - name: hashring
-        #   secret:
-        #     secretName: hashring
   volumeClaimTemplates:
     - metadata:
         name: data
