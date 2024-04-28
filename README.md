@@ -7,6 +7,7 @@ The following was deployed within a Minikube VM with 4 CPUs and 8GB RAM specs
 4. [Thanos](#thanos)
 5. [Decoding SDK](#decoding-sdk)
 6. [Log Parser](#log-parser)
+7. [Loki](#loki)
 
 ### Namespace <a id="namespace"></a>
 Create `monitoring`, `minio` and `decoding-sdk` namespaces:
@@ -189,3 +190,36 @@ kubectl port-forward svc/log-parser-service 8080
 Visit the Log Parser on `localhost:8080`, scroll down and you should see the metrics being populated with values:
 
 ![image](https://github.com/Niflnir/k8s-cloud-fyp/assets/70419463/8d0611a9-d5c6-4788-89c9-19e793b02160)
+
+### Loki <a id="loki"></a>
+
+To setup Loki, we will leverage on the `grafana/loki-stack` helm chart to simplify the deployment process. We will be supplying the helm chart with a custom `values.yaml` file which will only enable Loki and Promtail
+
+Add Grafana helm repo:
+```zsh
+helm repo add grafana https://grafana.github.io/helm-charts
+```
+
+Install grafana/loki-stack helm chart with custom values:
+```zsh
+helm install --namespace=monitoring --values loki/values.yaml loki grafana/loki-stack
+```
+
+We can create custom labels from the logs that Promtail scrapes, in this case we want the `status` from the response object as a custom label
+
+To do that we need to delete the existing Promtail config secret and provide our custom Promtail config secret:
+```zsh
+kubectl delete secrets loki-promtail
+kubectl create secret generic loki-promtail --from-file=./loki/promtail.yaml
+```
+
+Reload Promtail by deleting the Promtail pod:
+```zsh
+# Your pod name suffix would probably be different
+kubectl delete pod/loki-promtail-brb97
+```
+
+#### Checkpoint 5
+Ensure that both the Loki & Promtail pods are up and running:
+
+![Loki Promtail Pod](https://github.com/Niflnir/k8s-cloud-fyp/assets/70419463/0fc95f5b-728f-449f-a73a-45866812f8c9)
