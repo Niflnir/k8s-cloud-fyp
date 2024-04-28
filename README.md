@@ -269,7 +269,7 @@ Adding Loki data source:
 
 [Screencast from 2024-04-28 19-52-10.webm](https://github.com/Niflnir/k8s-cloud-fyp/assets/70419463/13ea2669-7725-4f23-838c-016a823a711e)
 
-As seen in the video, an error appears after clicking Save and Test button. This seems to be a bug and we can just ignore this. Just make sure that you can query the decoding sdk server and worker logs with Loki(shown in the second part of the video)
+As seen in the video, an error appears after clicking Save and Test button. This seems to be a bug and we can just ignore this. Just make sure that you can query the decoding sdk server and worker logs with Loki (shown in the second part of the video)
 
 Copy JSON from `grafana/dashboards/decoding-sdk-dashboard.json` and import Decoding SDK dashboard:
 
@@ -297,6 +297,7 @@ There are currently 4 rules defined in `prometheus/rules.yaml` that are grouped 
 
 Severity=Critical group:
 - InstanceDown (Immediately fire if any instance is down)
+  
 Severity=Moderate group:
 - HighRequestFailure (More than 10 failed requests in the past 5 minutes)
 - HighRequestLatency (50th Percentile of latency is more than 1 second)
@@ -310,5 +311,6 @@ When a rule is triggered, it will fire an alert and you will receive an email co
 
 ![image](https://github.com/Niflnir/k8s-cloud-fyp/assets/70419463/e382c18e-56db-4f25-89bb-9b4874cbd958)
 
+Thanks for reading!! ☺️ ❤️
 
 
