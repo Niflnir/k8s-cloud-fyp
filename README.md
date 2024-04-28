@@ -1,43 +1,44 @@
 ## Setup
-The following below was deployed within a Minikube VM with 4 CPUs and 8GB RAM specs
+The following was deployed within a Minikube VM with 4 CPUs and 8GB RAM specs
+
 1. [Namespace](#namespace)
 2. [Prometheus Operator](#prometheus-operator)
-3. [Checkpoint 1](#checkpoint1)
-4. [MinIO](#minio)
-5. [Checkpoint 2](#checkpoint2)
-6. [Thanos](#thanos)
+3. [MinIO](#minio)
+4. [Thanos](#thanos)
+5. [Decoding SDK](#decoding-sdk)
+6. [Log Parser](#log-parser)
 
 ### Namespace <a id="namespace"></a>
-Create `monitoring` and `minio` namespaces 
+Create `monitoring`, `minio` and `decoding-sdk` namespaces:
 ```zsh
 kubectl apply -f namespace.yaml
 ```
 
 ### Prometheus Operator <a id="prometheus-operator"></a>
 
-Switch to `monitoring` namespace
+Switch to `monitoring` namespace:
 ```zsh
 kubectl config set-context --current --namespace=monitoring
 ```
 
-Create Prometheus Operator Custom Resource Definitions (CRDs)
+Create Prometheus Operator Custom Resource Definitions (CRDs):
 ```zsh
 kubectl create -f prometheus-operator-crds
 ```
 
-Apply Prometheus Operator folder
+Apply Prometheus Operator folder:
 ```zsh
 kubectl apply -R -f prometheus-operator
 ```
 
-When Prometheus Operator is up, apply Prometheus folder
+When Prometheus Operator is up, apply Prometheus folder:
 ```zsh
 kubectl apply -f prometheus
 ```
 
-### Checkpoint 1 <a id="checkpoint1"></a>
+#### Checkpoint 1 <a id="checkpoint1"></a>
 
-Port forward Prometheus Operator service
+Port forward Prometheus Operator service:
 ```zsh
 kubectl port-forward svc/prometheus-operated 9090
 ```
@@ -53,12 +54,12 @@ If the targets cannot be seen, please redo the Prometheus Operator steps and mak
 
 ### MinIO <a id="minio"></a>
 
-Switch to `minio` namespace
+Switch to `minio` namespace:
 ```zsh
 kubectl config set-context --current --namespace=minio
 ```
 
-Apply MinIO folder
+Apply MinIO folder:
 ```zsh
 kubectl apply -f minio
 ```
@@ -79,8 +80,7 @@ Go to `Buckets`, enter the Bucket Name as `prometheus-metrics` and click on `Cre
 
 Update the placeholders in `prometheus/objectstore.yaml` with your `Access Key` and `Secret Key`
 
-Apply the changes
-
+Apply the changes:
 ```zsh
 kubectl apply -f prometheus/objectstore.yaml
 ```
@@ -93,12 +93,12 @@ Visit Prometheus Operator on `localhost:9090` and there should be a new MinIO Se
 
 ### Thanos <a id="thanos"></a>
 
-Switch to `monitoring` namespace
+Switch to `monitoring` namespace:
 ```zsh
 kubectl config set-context --current --namespace=monitoring
 ```
 
-Apply Thanos folder
+Apply Thanos folder:
 
 ```zsh
 kubectl apply -f thanos
@@ -110,15 +110,15 @@ Run `kubectl get all` and wait till the all the objects are up. The `monitoring`
 
 *Note: If the storegateway pod is failing to start, make sure the bucket name in `prometheus/objectstore.yaml` matches the bucket name that was created in MinIO. Also make sure that the access and secret keys match the ones you created earlier. If you forgot to save the access and secret keys earlier, just create a new pair and update `prometheus/objectstore.yaml` accordingly
 
-Apply Thanos Receiver folder
+Apply Thanos Receiver folder:
 
 ```zsh
 kubectl apply -f receiver
 ```
 
-### Checkpoint 3
+#### Checkpoint 3
 
-Port forward Thanos Querier service
+Port forward Thanos Querier service:
 ```
 kubectl port-forward svc/querier 9090
 OR
@@ -140,3 +140,52 @@ If this works it means that the Thanos Querier is successfully retrieving metric
 
 *Note: Thanos Receiver by default uploads to the MinIO bucket every 2 hours. To test whether the Thanos Querier is successfully retrieving metrics from the Thanos Store Gateway, just observe whether your are able to query for metrics older than 2 hours
 
+### Decoding SDK <a id="decoding-sdk"></a>
+
+If you have already deployed the decoding sdk server and worker, you can skip this step
+
+Else, you can deploy them by running:
+```zsh
+kubectl apply -f decoding-sdk
+```
+The server and worker will be deployed in the `decoding-sdk` namespace
+
+*Note: The `decoding-sdk/pv.yaml` file `hostPath` path value is set to `/opt/models`. If the models are in a separate directory, please change the path value accordingly.
+
+### Log Parser <a id="log-parser"></a>
+
+The Log Parser scrapes logs from the decoding sdk server and worker pods. It implements custom logic to parse the logs and export custom prometheus metrics
+
+Since the log parser is deployed in the `monitoring` namespace and needs to scrape pod logs in the `decoding-sdk` namespace, it needs a service account with the necessary cluster role permissions
+
+Apply the Log Parser folder:
+```zsh
+kubectl apply -R -f log-parser
+```
+
+#### Checkpoint 4
+
+To test if the Log Parser is exporting metrics successfully, we need to send some dummy requests to the decoding sdk server
+
+Create and activate virtual Python env (optional but recommended):
+```zsh
+python -m venv venv
+source venv/bin/activate
+```
+
+Install python dependencies and run audio file:
+```zsh
+pip install -r requirements.txt
+# Replace cluster-ip with your K8s cluster's ip address
+python client_sdk_v2.py -u ws://cluster-ip:30080/abx/ws/speech -m Abax_English_ASR_0822 audio-files/countries.wav
+```
+If u see the text `countries` appended to test.log file, it means that the request was successful
+
+Port forward Log Parser service:
+```zsh
+kubectl port-forward svc/log-parser-service 8080
+```
+
+Visit the Log Parser on `localhost:8080`, scroll down and you should see the metrics being populated with values:
+
+![image](https://github.com/Niflnir/k8s-cloud-fyp/assets/70419463/8d0611a9-d5c6-4788-89c9-19e793b02160)
