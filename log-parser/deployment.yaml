@@ -15,6 +15,7 @@ spec:
       labels:
         app: log-parser
     spec:
+      serviceAccountName: log-parser
       containers:
       - name: log-parser
         image: niflnir/log-parser-image:latest
