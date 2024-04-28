@@ -9,6 +9,7 @@ The following was deployed within a Minikube VM with 4 CPUs and 8GB RAM specs
 6. [Log Parser](#log-parser)
 7. [Loki](#loki)
 8. [Grafana](#grafana)
+9. [Alertmanager](#alert-manager)
 
 ### Namespace <a id="namespace"></a>
 Create `monitoring`, `minio` and `decoding-sdk` namespaces:
@@ -276,7 +277,38 @@ Copy JSON from `grafana/dashboards/decoding-sdk-dashboard.json` and import Decod
 
 Copy JSON from `grafana/dashboards/minio-dashboard.json` and import MinIO dashboard:
 
-[Screencast from 2024-04-28 20-03-14.webm](https://github.com/Niflnir/k8s-cloud-fyp/assets/70419463/c7cfed07-4071-40cf-902c-075efe0b984e)
+[Screencast from 2024-04-28 20-03-14.webm](https://github.com/Niflnir/k8s-cloud-fyp/assets/70419463/c7cfed07-4071-40cf-902c-075efe0b984e
+
+### Alertmanager <a id="alert-manager"></a>
+
+For the alertmanager, the setup currently uses gmail as the alert notifier. If you would like to use a separate software to notify your alerts you will have to configure separately.
+
+Before we apply the Alertmanager folder, we need to fill in the placeholders in `alertmanager/alertmanagerconfig.yaml`:
+
+1. Replace `<your-gmail>` placeholder with your gmail address
+2. Create a Google app password via `https://myaccount.google.com/apppasswords` and replace the `<your-password>` placeholder with the app password
+
+Apply Alertmanager folder
+```zsh
+kubectl apply -f alertmanager
+```
+
+There are currently 4 rules defined in `prometheus/rules.yaml` that are grouped by severity.
+
+Severity=Critical group:
+- InstanceDown (Immediately fire if any instance is down)
+Severity=Moderate group:
+- HighRequestFailure (More than 10 failed requests in the past 5 minutes)
+- HighRequestLatency (50th Percentile of latency is more than 1 second)
+- HighRealTimeFactor (50th Percentile of RTF is more than 1.5)
+
+These rules were applied earlier when applying the Prometheus folder. You can see these rules by visiting Prometheus Operator and navigating to Status > Rules:
+
+![image](https://github.com/Niflnir/k8s-cloud-fyp/assets/70419463/89e293a0-dbc3-4ee9-b792-ec73b4523409)
+
+When a rule is triggered, it will fire an alert and you will receive an email containing the rules that were triggered:
+
+![image](https://github.com/Niflnir/k8s-cloud-fyp/assets/70419463/e382c18e-56db-4f25-89bb-9b4874cbd958)
 
 
 
