@@ -265,3 +265,18 @@ Adding Thanos Querier data source:
 Adding Loki data source:
 - Name: Loki
 - URL: http://loki:3100
+
+[Screencast from 2024-04-28 19-52-10.webm](https://github.com/Niflnir/k8s-cloud-fyp/assets/70419463/13ea2669-7725-4f23-838c-016a823a711e)
+
+As seen in the video, an error appears after clicking Save and Test button. This seems to be a bug and we can just ignore this. Just make sure that you can query the decoding sdk server and worker logs with Loki(shown in the second part of the video)
+
+Copy JSON from `grafana/dashboards/decoding-sdk-dashboard.json` and import Decoding SDK dashboard:
+
+[Screencast from 2024-04-28 19-45-18.webm](https://github.com/Niflnir/k8s-cloud-fyp/assets/70419463/11f12ea1-4817-42ef-95d5-0fcd08ae36b1)
+
+Copy JSON from `grafana/dashboards/minio-dashboard.json` and import MinIO dashboard:
+
+[Screencast from 2024-04-28 20-03-14.webm](https://github.com/Niflnir/k8s-cloud-fyp/assets/70419463/c7cfed07-4071-40cf-902c-075efe0b984e)
+
+
+
