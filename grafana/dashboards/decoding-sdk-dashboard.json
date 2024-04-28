@@ -1,4 +1,55 @@
 {
+  "__inputs": [
+    {
+      "name": "DS_THANOS_QUERIER",
+      "label": "Thanos Querier",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    },
+    {
+      "name": "DS_LOKI",
+      "label": "Loki",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "loki",
+      "pluginName": "Loki"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "10.4.2"
+    },
+    {
+      "type": "datasource",
+      "id": "loki",
+      "name": "Loki",
+      "version": "1.0.0"
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    }
+  ],
   "annotations": {
     "list": [
       {
@@ -18,13 +69,13 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 1,
+  "id": null,
   "links": [],
   "panels": [
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "fieldConfig": {
         "defaults": {
@@ -103,7 +154,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "disableTextWrap": false,
           "editorMode": "builder",
@@ -123,7 +174,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "fieldConfig": {
         "defaults": {
@@ -204,7 +255,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "editorMode": "code",
           "expr": "sum(decoding_requests_successful_total) / sum(server_requests_total) * 100",
@@ -220,7 +271,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "fieldConfig": {
         "defaults": {
@@ -301,7 +352,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "editorMode": "code",
           "expr": "sum(decoding_requests_failed_total) / sum(server_requests_total) * 100",
@@ -317,7 +368,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "fieldConfig": {
         "defaults": {
@@ -397,7 +448,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "editorMode": "code",
           "expr": "histogram_quantile(0.95, sum(latency_milliseconds_bucket) by (le))",
@@ -413,7 +464,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "fieldConfig": {
         "defaults": {
@@ -493,7 +544,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "editorMode": "code",
           "expr": "histogram_quantile(0.99, sum(latency_milliseconds_bucket) by (le))",
@@ -509,7 +560,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "fieldConfig": {
         "defaults": {
@@ -553,7 +604,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -587,7 +639,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "editorMode": "code",
           "expr": "histogram_quantile(0.95, sum(real_time_factor_bucket) by (le))",
@@ -603,7 +655,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "fieldConfig": {
         "defaults": {
@@ -647,7 +699,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -681,7 +734,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "editorMode": "code",
           "expr": "histogram_quantile(0.99, sum(real_time_factor_bucket) by (le))",
@@ -697,7 +750,7 @@
     {
       "datasource": {
         "type": "loki",
-        "uid": "cdha9rv8w0yrke"
+        "uid": "${DS_LOKI}"
       },
       "fieldConfig": {
         "defaults": {
@@ -716,7 +769,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -751,7 +805,7 @@
         {
           "datasource": {
             "type": "loki",
-            "uid": "cdha9rv8w0yrke"
+            "uid": "${DS_LOKI}"
           },
           "editorMode": "builder",
           "expr": "{app=\"decoding-sdk-server\"} |= ``",
@@ -765,7 +819,7 @@
     {
       "datasource": {
         "type": "loki",
-        "uid": "cdha9rv8w0yrke"
+        "uid": "${DS_LOKI}"
       },
       "fieldConfig": {
         "defaults": {
@@ -784,7 +838,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -819,7 +874,7 @@
         {
           "datasource": {
             "type": "loki",
-            "uid": "cdha9rv8w0yrke"
+            "uid": "${DS_LOKI}"
           },
           "editorMode": "builder",
           "expr": "{app=\"decoding-sdk-worker\"} |= ``",

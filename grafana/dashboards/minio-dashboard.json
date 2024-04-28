@@ -1,4 +1,65 @@
 {
+  "__inputs": [
+    {
+      "name": "DS_THANOS_QUERIER",
+      "label": "Thanos Querier",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "bargauge",
+      "name": "Bar gauge",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "gauge",
+      "name": "Gauge",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "10.4.2"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph (old)",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "piechart",
+      "name": "Pie chart",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    }
+  ],
   "annotations": {
     "list": [
       {
@@ -26,7 +87,7 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 13502,
   "graphTooltip": 0,
-  "id": 2,
+  "id": null,
   "links": [
     {
       "icon": "external link",
@@ -43,7 +104,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "fieldConfig": {
         "defaults": {
@@ -89,7 +150,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "disableTextWrap": false,
           "editorMode": "code",
@@ -110,7 +171,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "description": "",
       "fieldConfig": {
@@ -169,7 +230,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "exemplar": true,
           "expr": "time() - max(minio_node_process_starttime_seconds{job=~\"$scrape_jobs\"})",
@@ -189,7 +250,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "description": "",
       "fieldConfig": {
@@ -287,7 +348,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "exemplar": true,
           "expr": "topk(1, sum(minio_cluster_capacity_usable_total_bytes{job=~\"$scrape_jobs\"}) by (instance)) - topk(1, sum(minio_cluster_capacity_usable_free_bytes{job=~\"$scrape_jobs\"}) by (instance))",
@@ -302,7 +363,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "exemplar": true,
           "expr": "topk(1, sum(minio_cluster_capacity_usable_free_bytes{job=~\"$scrape_jobs\"}) by (instance)) ",
@@ -318,7 +379,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "fieldConfig": {
         "defaults": {
@@ -439,7 +500,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "editorMode": "code",
           "exemplar": true,
@@ -456,7 +517,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "fieldConfig": {
         "defaults": {
@@ -506,7 +567,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "disableTextWrap": false,
           "editorMode": "code",
@@ -530,7 +591,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "description": "",
       "fieldConfig": {
@@ -593,7 +654,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "exemplar": true,
           "expr": "max(minio_cluster_nodes_online_total{job=~\"$scrape_jobs\"})",
@@ -614,7 +675,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "description": "",
       "fieldConfig": {
@@ -660,7 +721,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -679,7 +740,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -698,7 +759,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "description": "",
       "fieldConfig": {
@@ -750,7 +811,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "exemplar": true,
           "expr": "max(minio_heal_time_last_activity_nano_seconds{job=~\"$scrape_jobs\"})",
@@ -770,7 +831,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "description": "",
       "fieldConfig": {
@@ -822,7 +883,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "exemplar": true,
           "expr": "max(minio_usage_last_activity_nano_seconds{job=~\"$scrape_jobs\"})",
@@ -842,7 +903,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "fieldConfig": {
         "defaults": {
@@ -908,7 +969,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "editorMode": "code",
           "exemplar": true,
@@ -927,7 +988,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "fieldConfig": {
         "defaults": {
@@ -993,7 +1054,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "editorMode": "code",
           "exemplar": true,
@@ -1012,7 +1073,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1065,7 +1126,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "editorMode": "code",
           "exemplar": true,
@@ -1082,7 +1143,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1137,7 +1198,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -1156,7 +1217,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1206,7 +1267,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "disableTextWrap": false,
           "editorMode": "builder",
@@ -1223,7 +1284,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "disableTextWrap": false,
           "editorMode": "builder",
@@ -1240,7 +1301,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "disableTextWrap": false,
           "editorMode": "builder",
@@ -1257,7 +1318,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "disableTextWrap": false,
           "editorMode": "builder",
@@ -1274,7 +1335,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "disableTextWrap": false,
           "editorMode": "builder",
@@ -1295,7 +1356,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "description": "",
       "fieldConfig": {
@@ -1353,7 +1414,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "exemplar": true,
           "expr": "sum by (instance) (minio_s3_traffic_received_bytes{job=~\"$scrape_jobs\"})",
@@ -1374,7 +1435,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "description": "",
       "fieldConfig": {
@@ -1432,7 +1493,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "exemplar": true,
           "expr": "sum by (instance) (minio_s3_traffic_sent_bytes{job=~\"$scrape_jobs\"})",
@@ -1453,7 +1514,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1533,7 +1594,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "exemplar": true,
           "expr": "sum by (server) (rate(minio_s3_traffic_received_bytes{job=~\"$scrape_jobs\"}[$__rate_interval]))",
@@ -1549,7 +1610,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1629,7 +1690,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "exemplar": true,
           "expr": "sum by (server) (rate(minio_s3_traffic_sent_bytes{job=~\"$scrape_jobs\"}[$__rate_interval]))",
@@ -1652,7 +1713,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -1692,7 +1753,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "exemplar": true,
           "expr": "sum by (server,api) (increase(minio_s3_requests_total{job=~\"$scrape_jobs\"}[$__rate_interval]))",
@@ -1744,7 +1805,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -1784,7 +1845,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "exemplar": true,
           "expr": "sum by (server,api) (increase(minio_s3_requests_4xx_errors_total{job=~\"$scrape_jobs\"}[$__rate_interval]))",
@@ -1836,7 +1897,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -1876,7 +1937,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "exemplar": true,
           "expr": "sum by (server,api) (increase(minio_s3_requests_5xx_errors_total{job=~\"$scrape_jobs\"}[$__rate_interval]))",
@@ -1925,7 +1986,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -1965,7 +2026,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "exemplar": true,
           "expr": "rate(minio_node_io_rchar_bytes{job=~\"$scrape_jobs\"}[$__rate_interval])",
@@ -1978,7 +2039,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "exemplar": true,
           "expr": "rate(minio_node_io_wchar_bytes{job=~\"$scrape_jobs\"}[$__rate_interval])",
@@ -2029,7 +2090,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "description": "Number of online drives per MinIO Server",
       "fieldConfig": {
@@ -2077,7 +2138,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "exemplar": true,
           "expr": "rate(minio_node_syscall_read_total{job=~\"$scrape_jobs\"}[$__rate_interval])",
@@ -2092,7 +2153,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "exemplar": true,
           "expr": "rate(minio_node_syscall_write_total{job=~\"$scrape_jobs\"}[$__rate_interval])",
@@ -2145,7 +2206,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "description": "",
       "fieldConfig": {
@@ -2194,7 +2255,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "exemplar": true,
           "expr": "minio_node_file_descriptor_open_total{job=~\"$scrape_jobs\"}",
@@ -2244,7 +2305,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -2284,7 +2345,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "exemplar": true,
           "expr": "rate(minio_node_scanner_objects_scanned{job=~\"$scrape_jobs\"}[$__rate_interval])",
@@ -2334,7 +2395,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -2374,7 +2435,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "exemplar": true,
           "expr": "rate(minio_node_scanner_versions_scanned{job=~\"$scrape_jobs\"}[$__rate_interval])",
@@ -2424,7 +2485,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -2464,7 +2525,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "exemplar": true,
           "expr": "rate(minio_node_scanner_directories_scanned{job=~\"$scrape_jobs\"}[$__rate_interval])",
@@ -2514,7 +2575,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -2554,7 +2615,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "exemplar": true,
           "expr": "rate(minio_node_scanner_bucket_scans_started{job=~\"$scrape_jobs\"}[$__rate_interval])",
@@ -2604,7 +2665,7 @@
       "dashes": false,
       "datasource": {
         "type": "prometheus",
-        "uid": "fdha9q60zm3uod"
+        "uid": "${DS_THANOS_QUERIER}"
       },
       "fill": 1,
       "fillGradient": 0,
@@ -2644,7 +2705,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "fdha9q60zm3uod"
+            "uid": "${DS_THANOS_QUERIER}"
           },
           "exemplar": true,
           "expr": "rate(minio_node_scanner_bucket_scans_finished{job=~\"$scrape_jobs\"}[$__rate_interval])",
@@ -2696,14 +2757,10 @@
   "templating": {
     "list": [
       {
-        "current": {
-          "selected": false,
-          "text": "All",
-          "value": "$__all"
-        },
+        "current": {},
         "datasource": {
           "type": "prometheus",
-          "uid": "fdha9q60zm3uod"
+          "uid": "${DS_THANOS_QUERIER}"
         },
         "definition": "label_values(job)",
         "hide": 0,
