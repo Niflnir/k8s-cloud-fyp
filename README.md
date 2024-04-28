@@ -8,6 +8,7 @@ The following was deployed within a Minikube VM with 4 CPUs and 8GB RAM specs
 5. [Decoding SDK](#decoding-sdk)
 6. [Log Parser](#log-parser)
 7. [Loki](#loki)
+8. [Grafana](#grafana)
 
 ### Namespace <a id="namespace"></a>
 Create `monitoring`, `minio` and `decoding-sdk` namespaces:
@@ -151,6 +152,12 @@ kubectl apply -f decoding-sdk
 ```
 The server and worker will be deployed in the `decoding-sdk` namespace
 
+If you are on Minikube, you will need to mount the models folder locally by running:
+```zsh
+# Replace your-models-folder-path accordingly
+minikube mount your-models-folder-path:/opt/models
+```
+
 *Note: The `decoding-sdk/pv.yaml` file `hostPath` path value is set to `/opt/models`. If the models are in a separate directory, please change the path value accordingly.
 
 ### Log Parser <a id="log-parser"></a>
@@ -223,3 +230,38 @@ kubectl delete pod/loki-promtail-brb97
 Ensure that both the Loki & Promtail pods are up and running:
 
 ![Loki Promtail Pod](https://github.com/Niflnir/k8s-cloud-fyp/assets/70419463/0fc95f5b-728f-449f-a73a-45866812f8c9)
+
+### Grafana <a id="grafana"></a>
+
+Create Grafana folder needed by Persistent Volume:
+```zsh
+# Cloud
+mkdir /tmp/grafana-pv
+
+# Minikube
+# Replace your-grafana-folder-path accordingly
+minikube mount your-grafana-folder-path:/tmp/grafana-pv
+```
+*Note: If you want to use a different path, update hostPath path value in `grafana/pv.yaml`
+
+Apply Grafana folder:
+```zsh
+kubectl apply -f grafana
+```
+
+Port forward Grafana service:
+```zsh
+kubectl port-forward svc/grafana 3000
+```
+
+Visit Grafana on `localhost:3000` and login with username `admin` and password `admin`
+
+Adding Thanos Querier data source:
+- Name: Thanos Querier
+- Prometheus server URL: http://querier.monitoring.svc.cluster.local:9090
+
+[Screencast from 2024-04-28 11-40-52.webm](https://github.com/Niflnir/k8s-cloud-fyp/assets/70419463/00b9a329-7ffc-46bd-a721-60c50dfea2ec)
+
+Adding Loki data source:
+- Name: Loki
+- URL: http://loki:3100
