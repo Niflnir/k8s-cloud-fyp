@@ -1,5 +1,6 @@
 import re
 import concurrent.futures
+import logging
 from kubernetes import client, config, watch
 from prometheus_client import start_http_server, disable_created_metrics, Counter, Gauge, Histogram, Summary
 
@@ -152,9 +153,15 @@ def parse_worker_log(log_line):
 
 
 def parse_logs():
-    config.load_incluster_config()
+    try:
+        config.load_incluster_config()
+        logging.info("In-cluster config loaded successfully.")
+    except Exception as e:
+        logging.error(f"Failed to load in-cluster config: {e}")
+        return
+
     v1 = client.CoreV1Api()
-    namespace = 'monitoring'
+    namespace = 'decoding-sdk'
 
     def stream_logs(container):
         w = watch.Watch()
