@@ -14,8 +14,7 @@ spec:
         app: grafana
     spec:
       securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
+        runAsUser: 0
       containers:
       - name: grafana
         image: grafana/grafana:latest
