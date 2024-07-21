@@ -2,7 +2,7 @@ import re
 import concurrent.futures
 import logging
 from kubernetes import client, config, watch
-from prometheus_client import start_http_server, disable_created_metrics, Counter, Gauge, Histogram, Summary
+from prometheus_client import start_http_server, disable_created_metrics, Counter, Gauge, Histogram
 
 SERVER_REQUESTS = Counter('server_requests', 'Number of requests received by the server')
 DECODING_REQUESTS_FAILED = Counter('decoding_requests_failed', 'Number of failed decoding requests')
@@ -60,7 +60,7 @@ def update_request_count_and_duration_metrics(log_line):
     global end_time
 
     request_start_pattern = re.compile(r'INFO.* (\d{2}:\d{2}:\d{2},\d{3}) (\w+-\w+-\w+-\w+-\w+): OPEN')
-    request_end_pattern = re.compile(r'INFO.* (\d{2}:\d{2}:\d{2},\d{3}) (\w+-\w+-\w+-\w+-\w+): Sending event')
+    request_end_pattern = re.compile(r'INFO.* (\d{2}:\d{2}:\d{2},\d{3}) (\w+-\w+-\w+-\w+-\w+): Sending event.*result')
 
     request_start_match = request_start_pattern.search(log_line)
     if request_start_match:
