@@ -81,12 +81,7 @@ Go to `Buckets`, enter the Bucket Name as `prometheus-metrics` and click on `Cre
 
 ![Minio Create Bucket](https://github.com/Niflnir/k8s-cloud-fyp/assets/70419463/44c7cedb-74ca-47f1-9c00-6389a07e48f3)
 
-Update the placeholders in `prometheus/objectstore.yaml` with your `Access Key` and `Secret Key`
-
-Apply the changes:
-```zsh
-kubectl apply -f prometheus/objectstore.yaml
-```
+Update the placeholders in `thanos/store-gateway/objectstore.yaml` with your `Access Key` and `Secret Key`
 
 ### Checkpoint 2 <a id="checkpoint2"></a>
 
@@ -104,7 +99,7 @@ kubectl config set-context --current --namespace=monitoring
 Apply Thanos folder:
 
 ```zsh
-kubectl apply -f thanos
+kubectl apply -R -f thanos
 ```
 
 Run `kubectl get all` and wait till the all the objects are up. The `monitoring` namespace should look something similar to this:
@@ -112,12 +107,6 @@ Run `kubectl get all` and wait till the all the objects are up. The `monitoring`
 ![image](https://github.com/Niflnir/k8s-cloud-fyp/assets/70419463/50a15f07-1af4-47cb-966b-b6f696671601)
 
 *Note: If the storegateway pod is failing to start, make sure the bucket name in `prometheus/objectstore.yaml` matches the bucket name that was created in MinIO. Also make sure that the access and secret keys match the ones you created earlier. If you forgot to save the access and secret keys earlier, just create a new pair and update `prometheus/objectstore.yaml` accordingly
-
-Apply Thanos Receiver folder:
-
-```zsh
-kubectl apply -f receiver
-```
 
 #### Checkpoint 3
 
