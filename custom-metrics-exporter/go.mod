@@ -1,4 +1,4 @@
-module log-parser
+module custom-metrics-exporter
 
 go 1.22.5
 
