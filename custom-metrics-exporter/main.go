@@ -15,16 +15,6 @@ import (
 	"custom-metrics-exporter/parser"
 )
 
-func parseServerLog(logLine string) {
-	parser.ParseSpeechWorkerCount(logLine)
-	parser.ParseDecodingRequests(logLine)
-	parser.ParseRequestStart(logLine)
-	parser.ParseRequestEnd(logLine)
-}
-
-func parseWorkerLog(logLine string) {
-}
-
 func getContainerLogs(clientset *kubernetes.Clientset, namespace string, podName string) {
 	podLogOpts := v1.PodLogOptions{
 		Follow: true,
@@ -40,9 +30,9 @@ func getContainerLogs(clientset *kubernetes.Clientset, namespace string, podName
 	for scanner.Scan() {
 		logLine := scanner.Text()
 		if strings.Contains(podName, "server") {
-			parseServerLog(logLine)
+			parser.ParseServerLog(logLine)
 		} else if strings.Contains(podName, "worker") {
-			parseWorkerLog(logLine)
+			parser.ParseWorkerLog(logLine)
 		}
 	}
 	if err := scanner.Err(); err != nil {
