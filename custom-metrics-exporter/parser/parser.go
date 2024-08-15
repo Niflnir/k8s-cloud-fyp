@@ -7,6 +7,8 @@ import (
 	"strconv"
 
 	"github.com/prometheus/client_golang/prometheus"
+
+	"custom-metrics-exporter/utils"
 )
 
 var (
@@ -44,7 +46,7 @@ var (
 	requestEndString   string
 )
 
-func parseRequestStart(logLine string) {
+func ParseRequestStart(logLine string) {
 	requestStartRegex := regexp.MustCompile(`INFO.* (\d{2}:\d{2}:\d{2},\d{3}) (\w+-\w+-\w+-\w+-\w+): OPEN`)
 	match := requestStartRegex.FindStringSubmatch(logLine)
 
@@ -56,7 +58,7 @@ func parseRequestStart(logLine string) {
 	fmt.Println(requestStartString)
 }
 
-func parseRequestEnd(logLine string) {
+func ParseRequestEnd(logLine string) {
 	requestEndRegex := regexp.MustCompile(`INFO.* (\d{2}:\d{2}:\d{2},\d{3}) (\w+-\w+-\w+-\w+-\w+): Sending event.*result`)
 	match := requestEndRegex.FindStringSubmatch(logLine)
 
@@ -65,11 +67,11 @@ func parseRequestEnd(logLine string) {
 	}
 
 	requestEndString = match[1]
-	duration := calculateDurationMilliseconds(requestStartString, requestEndString)
+	duration := utils.CalculateDurationMilliseconds(requestStartString, requestEndString)
 	REQUEST_DURATION.Observe(float64(duration))
 }
 
-func parseSpeechWorkerCount(logLine string) error {
+func ParseSpeechWorkerCount(logLine string) error {
 	speechWorkerCountRegex := regexp.MustCompile(`INFO.* Number of worker available (\d+)`)
 	match := speechWorkerCountRegex.FindStringSubmatch(logLine)
 
@@ -87,7 +89,7 @@ func parseSpeechWorkerCount(logLine string) error {
 	return nil
 }
 
-func parseDecodingRequests(logLine string) {
+func ParseDecodingRequests(logLine string) {
 	sendingEventRegex := regexp.MustCompile(`INFO.* (\w+-\w+-\w+-\w+-\w+).* Sending event \{'status': (\d+).*result`)
 
 	match := sendingEventRegex.FindStringSubmatch(logLine)

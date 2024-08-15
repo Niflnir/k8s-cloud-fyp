@@ -7,18 +7,19 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Niflnir/k8s-cloud-fyp/custom-metrics-exporter/internal/parser"
 	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
+
+	"custom-metrics-exporter/parser"
 )
 
 func parseServerLog(logLine string) {
-	parser.parseSpeechWorkerCount(logLine)
-	parser.parseDecodingRequests(logLine)
-	parser.parseRequestStart(logLine)
-	parser.parseRequestEnd(logLine)
+	parser.ParseSpeechWorkerCount(logLine)
+	parser.ParseDecodingRequests(logLine)
+	parser.ParseRequestStart(logLine)
+	parser.ParseRequestEnd(logLine)
 }
 
 func parseWorkerLog(logLine string) {

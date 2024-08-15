@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func calculateDurationMilliseconds(startTime string, endTime string) int {
+func CalculateDurationMilliseconds(startTime string, endTime string) int {
 	startParts := strings.Split(startTime, ",")
 	endParts := strings.Split(endTime, ",")
 
