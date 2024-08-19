@@ -8,7 +8,9 @@ spec:
   serviceAccountName: prometheus
   podMonitorSelector: {}
   podMonitorNamespaceSelector: {}
-  serviceMonitorSelector: {}
+  serviceMonitorSelector:
+    matchLabels:
+      prometheus: main
   serviceMonitorNamespaceSelector: {}
   alerting: 
     alertmanagers:
