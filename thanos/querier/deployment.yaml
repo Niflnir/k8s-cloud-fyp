@@ -30,7 +30,7 @@ spec:
             - --http-address=0.0.0.0:10902
             - --query.replica-label=__replica__
             - --store=storegateway.monitoring.svc.cluster.local:10901
-            - --store=receiver-store-1.monitoring.svc.cluster.local:10907
+            - --store=receiver-store.monitoring.svc.cluster.local:10907
           ports:
             - name: http
               containerPort: 10902

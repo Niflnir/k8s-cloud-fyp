@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: receiver-1
+  name: receiver
   namespace: monitoring
 spec:
   replicas: 1
@@ -11,12 +11,12 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: receiver
-      app.kubernetes.io/instance: receiver-1
+      app.kubernetes.io/instance: receiver
   template:
     metadata:
       labels:
         app.kubernetes.io/name: receiver
-        app.kubernetes.io/instance: receiver-1
+        app.kubernetes.io/instance: receiver
     spec:
       serviceAccount: thanos
       securityContext:
@@ -55,10 +55,10 @@ spec:
             - --label
             - receive_cluster="main"
             - --receive.tenant-label-name
-            - speechlab-asr
+            - speechlab_asr
             - --objstore.config-file=/conf/objstore.yml
             - --remote-write.address=0.0.0.0:10908 # Used by prometheus to send metrics to receiver
-            - --receive.local-endpoint=receiver-store-1.monitoring.svc.cluster.local:10907 # Used by querier to fetch metrics from receiver
+            - --receive.local-endpoint=receiver-store.monitoring.svc.cluster.local:10907 # Used by querier to fetch metrics from receiver
           ports:
             - name: http
               containerPort: 10909
