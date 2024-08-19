@@ -55,7 +55,7 @@ spec:
             - --label
             - receive_cluster="main"
             - --receive.tenant-label-name
-            - my_company_default
+            - speechlab-asr
             - --objstore.config-file=/conf/objstore.yml
             - --remote-write.address=0.0.0.0:10908 # Used by prometheus to send metrics to receiver
             - --receive.local-endpoint=receiver-store-1.monitoring.svc.cluster.local:10907 # Used by querier to fetch metrics from receiver
