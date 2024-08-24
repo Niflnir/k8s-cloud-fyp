@@ -45,7 +45,7 @@ spec:
             - --data-dir=/data
             - --retention.resolution-raw=7d
             - --retention.resolution-5m=30d
-            - --retention.resolution-1h=180d
+            - --retention.resolution-1h=0d
             - --consistency-delay=30m
             - --objstore.config-file=/conf/objstore.yml
             - --wait
