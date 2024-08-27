@@ -27,10 +27,10 @@ spec:
             - --log.level=info
             - --endpoint.info-timeout=30s
             - --grpc-address=0.0.0.0:10901
-            - --http-address=0.0.0.0:10902
+            - --http-address=0.0.0.0:9090
             - --query.replica-label=__replica__
-            - --store=storegateway.monitoring.svc.cluster.local:10901
-            - --store=receiver-store.monitoring.svc.cluster.local:10907
+            - --endpoint=storegateway.monitoring.svc.cluster.local:10901
+            - --endpoint=receiver-store.monitoring.svc.cluster.local:10907
           ports:
             - name: http
               containerPort: 10902
