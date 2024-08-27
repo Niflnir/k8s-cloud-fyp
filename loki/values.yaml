@@ -6,6 +6,9 @@ test_pod:
 loki:
   enabled: true
   isDefault: true
+  image:
+    repository: grafana/loki
+    tag: 2.9.3 
   url: http://{{(include "loki.serviceName" .)}}:{{ .Values.loki.service.port }}
   readinessProbe:
     httpGet:
