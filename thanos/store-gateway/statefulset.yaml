@@ -88,11 +88,6 @@ spec:
         - name: objstore
           secret:
             secretName: objstore
-  volumeClaimTemplates:
-    - metadata:
-        name: data
-      spec:
-        accessModes: [ReadWriteOnce]
-        resources:
-          requests:
-            storage: 10Gi
+        - name: data
+          persistentVolumeClaim:
+            claimName: store-gateway
