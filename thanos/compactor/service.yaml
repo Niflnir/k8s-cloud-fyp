@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: monitoring
+  name: compactor-console
+spec:
+  type: NodePort
+  ports:
+    - port: 9090
+      targetPort: http
+      protocol: TCP
+      name: http
+      nodePort: 30003
+  selector:
+    app.kubernetes.io/name: compactor

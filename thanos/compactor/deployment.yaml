@@ -41,7 +41,7 @@ spec:
           args:
             - compact
             - --log.level=info
-            - --http-address=0.0.0.0:10902
+            - --http-address=0.0.0.0:9090
             - --data-dir=/data
             - --retention.resolution-raw=7d
             - --retention.resolution-5m=30d
@@ -51,7 +51,7 @@ spec:
             - --wait
           ports:
             - name: http
-              containerPort: 10902
+              containerPort: 9090
               protocol: TCP
           livenessProbe:
             failureThreshold: 6

@@ -33,7 +33,7 @@ spec:
             - --endpoint=receiver-store.monitoring.svc.cluster.local:10907
           ports:
             - name: http
-              containerPort: 10902
+              containerPort: 9090
               protocol: TCP
             - name: grpc
               containerPort: 10901
