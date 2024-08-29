@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: custom-metrics-exporter-service-monitor
+  namespace: monitoring
+  labels:
+    prometheus: main
+spec:
+  jobLabel: job
+  endpoints:
+    - interval: 30s
+      port: web
+      path: /metrics
+  selector:
+    matchLabels:
+      app: custom-metrics-exporter
