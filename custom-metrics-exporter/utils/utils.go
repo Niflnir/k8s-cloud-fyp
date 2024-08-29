@@ -1,11 +1,19 @@
 package utils
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
 
 func CalculateDurationMilliseconds(startTime string, endTime string) int {
+	startTime = convertToMilliseconds(startTime)
+	endTime = convertToMilliseconds(endTime)
+	fmt.Println("---")
+	fmt.Println(startTime)
+	fmt.Println(endTime)
+	fmt.Println("---")
+
 	startParts := strings.Split(startTime, ",")
 	endParts := strings.Split(endTime, ",")
 
@@ -19,4 +27,11 @@ func CalculateDurationMilliseconds(startTime string, endTime string) int {
 	millisDiff := endMillis - startMillis
 
 	return (secondsDiff * 1000) + millisDiff
+}
+
+func convertToMilliseconds(time string) string {
+	if !strings.Contains(time, ",") {
+		time += ",000"
+	}
+	return time
 }

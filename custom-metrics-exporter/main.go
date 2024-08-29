@@ -4,8 +4,12 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"net/http"
 	"os"
 	"strings"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -77,10 +81,17 @@ func main() {
 	decodingSdkServerPodName := getPodName(clientset, namespace, "app=decoding-sdk-server")
 	decodingSdkWorkerPodName := getPodName(clientset, namespace, "app=decoding-sdk-worker")
 
+	// Register custom metrics
+	prometheus.MustRegister(parser.DecodingRequestsFailed)
+	prometheus.MustRegister(parser.DecodingRequestsSuccessful)
+	prometheus.MustRegister(parser.RequestDuration)
+	prometheus.MustRegister(parser.ServerWorkerLatency)
+	prometheus.MustRegister(parser.SpeechWorkerCount)
+
 	// Spawn go routines to watch and parse server and worker pod logs
 	go getContainerLogs(clientset, namespace, decodingSdkServerPodName)
 	go getContainerLogs(clientset, namespace, decodingSdkWorkerPodName)
 
-	// Let main routine run indefinitely
-	select {}
+	http.Handle("/metrics", promhttp.Handler())
+	http.ListenAndServe(":8080", nil)
 }

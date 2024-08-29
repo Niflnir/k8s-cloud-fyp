@@ -42,7 +42,7 @@ var (
 	PauseInstanceTimestampMap  = map[string]string{}
 	AudioStartTimestamp        string
 	// AudioEndTimestamp          string
-	SendingEventTimestampMap = map[string]string{}
+	ForwardingClientTimestampMap = map[string]string{}
 )
 
 func parseOpenConnectionLog(logLine string) bool {
@@ -70,20 +70,19 @@ func parseAvailableWorkersLog(logLine string) bool {
 		return false
 	}
 
-	fmt.Println("match found: ", workerCount)
+	fmt.Println("Worker count: ", workerCount)
 	SpeechWorkerCount.Set(float64(workerCount))
 	return true
 }
 
-func parseSendingEventLog(logLine string) bool {
-	sendingEventRegex := regexp.MustCompile(`INFO.* (\d{2}:\d{2}:\d{2},\d{3}) (\w+-\w+-\w+-\w+-\w+).* Sending event \{'status': (\d+).*result`)
+func parseSendingEventToClientLog(logLine string) bool {
+	sendingEventRegex := regexp.MustCompile(`INFO.* Sending event \{'status': (\d+).*result`)
 	match := sendingEventRegex.FindStringSubmatch(logLine)
 	if match == nil {
 		return false
 	}
 
-	sendingEventTimestamp, requestId, statusCode := match[1], match[2], match[3]
-	SendingEventTimestampMap[requestId] = sendingEventTimestamp
+	statusCode := match[1]
 
 	/*
 		Status code (integer):
@@ -103,55 +102,60 @@ func parseSendingEventLog(logLine string) bool {
 	return true
 }
 
+func parseForwardingClientLog(logLine string) bool {
+	forwardingClientRegex := regexp.MustCompile(`.*(\d{2}:\d{2}:\d{2}).* (\w+-\w+-\w+-\w+-\w+): Forwarding client message.* to worker`)
+	match := forwardingClientRegex.FindStringSubmatch(logLine)
+	if match == nil {
+		return false
+	}
+
+	forwardingClientTimestamp, requestId := match[1], match[2]
+	ForwardingClientTimestampMap[requestId] = forwardingClientTimestamp
+
+	return true
+}
+
 func updateMetricsOnConnectionCloseLog(logLine string) {
-	connectionCloseRegex := regexp.MustCompile(`INFO.* (\w+-\w+-\w+-\w+-\w+): Handling on_connection_close()`)
+	connectionCloseRegex := regexp.MustCompile(`INFO.* (\d{2}:\d{2}:\d{2},\d{3}) (\w+-\w+-\w+-\w+-\w+): Handling on_connection_close()`)
 	match := connectionCloseRegex.FindStringSubmatch(logLine)
 	if match == nil {
 		return
 	}
 
-	requestId := match[1]
-	fmt.Println("Request id: ", requestId)
+	closeConnectionTimestamp, requestId := match[1], match[2]
+
 	openConnectionTimestamp, openConnectionTimestampExists := OpenConnectionTimestampMap[requestId]
 	pauseInstanceTimestamp, pauseInstanceTimestampExists := PauseInstanceTimestampMap[requestId]
-	sendingEventTimestamp, sendingEventTimestampExists := SendingEventTimestampMap[requestId]
+	fowardingClientTimestamp, forwardingClientTimestampExists := ForwardingClientTimestampMap[requestId]
 
-	// Request duration = Sending event timestamp - Open connection timestamp
-	if sendingEventTimestampExists && openConnectionTimestampExists {
-		requestDuration := utils.CalculateDurationMilliseconds(openConnectionTimestamp, sendingEventTimestamp)
+	// Request duration = Close connection timestamp (server) - Open connection timestamp (server)
+	if openConnectionTimestampExists {
+		requestDuration := utils.CalculateDurationMilliseconds(openConnectionTimestamp, closeConnectionTimestamp)
 		fmt.Println("Request Duration: ", requestDuration)
 		RequestDuration.Observe(float64(requestDuration))
 	}
 
-	// Latency between server and worker = Sending event timestamp (server) - Pause instance timestamp (worker)
-	if sendingEventTimestampExists && pauseInstanceTimestampExists {
-		latencyDuration := utils.CalculateDurationMilliseconds(pauseInstanceTimestamp, sendingEventTimestamp)
+	// Latency between server and worker = Forwarding client message timestamp (server) - Pause instance timestamp (worker)
+	if forwardingClientTimestampExists && pauseInstanceTimestampExists {
+		latencyDuration := utils.CalculateDurationMilliseconds(fowardingClientTimestamp, pauseInstanceTimestamp)
 		fmt.Println("Latency Duration: ", latencyDuration)
 		ServerWorkerLatency.Observe(float64(latencyDuration))
 	}
 
-	// Real Time Factor = Request duration / Audio duration
-	// if sendingEventTimestampExists && openConnectionTimestampExists && pauseInstanceTimestampExists {
-	// 	requestDuration := utils.CalculateDurationMilliseconds(openConnectionTimestamp, sendingEventTimestamp)
-	// 	audioDuration := utils.CalculateDurationMilliseconds(AudioStartTimestamp, pauseInstanceTimestamp)
-	// 	RealTimeFactor.Observe(float64(requestDuration) / float64(audioDuration))
-	// 	fmt.Println("Request duration: ", requestDuration)
-	// 	fmt.Println("Audio duration: ", audioDuration)
-	// 	fmt.Println("Real time factor: ", float64(requestDuration)/float64(audioDuration))
-	// }
-
 	// Clear request ids from maps
 	delete(OpenConnectionTimestampMap, requestId)
 	delete(PauseInstanceTimestampMap, requestId)
-	delete(SendingEventTimestampMap, requestId)
+	delete(ForwardingClientTimestampMap, requestId)
 }
 
 func ParseServerLog(logLine string) {
 	if parseAvailableWorkersLog(logLine) {
 		return
-	} else if parseSendingEventLog(logLine) {
+	} else if parseSendingEventToClientLog(logLine) {
 		return
 	} else if parseOpenConnectionLog(logLine) {
+		return
+	} else if parseForwardingClientLog(logLine) {
 		return
 	}
 	updateMetricsOnConnectionCloseLog(logLine)
