@@ -39,7 +39,7 @@ spec:
       spec:
         resources:
           requests:
-            storage: 20Gi
+            storage: 10Gi
   remoteWrite:
     - url: http://receiver-write.monitoring.svc.cluster.local:10908/api/v1/receive
       queueConfig:
