@@ -92,6 +92,7 @@ func main() {
 	go getContainerLogs(clientset, namespace, decodingSdkServerPodName)
 	go getContainerLogs(clientset, namespace, decodingSdkWorkerPodName)
 
+	// Start server on port 8080 and setup /metrics endpoint
 	http.Handle("/metrics", promhttp.Handler())
 	http.ListenAndServe(":8080", nil)
 }
