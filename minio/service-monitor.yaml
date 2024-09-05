@@ -13,6 +13,10 @@ spec:
       port: minio-api
       path: /minio/v2/metrics/cluster
       scheme: http
+    - interval: 30s
+      port: minio-api
+      path: /minio/v2/metrics/resource
+      scheme: http
   selector:
     matchLabels:
       app: minio
