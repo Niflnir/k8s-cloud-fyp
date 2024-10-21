@@ -84,9 +84,8 @@ func main() {
 	// Register custom metrics
 	prometheus.MustRegister(parser.DecodingRequestsFailed)
 	prometheus.MustRegister(parser.DecodingRequestsSuccessful)
-	prometheus.MustRegister(parser.RequestDuration)
 	prometheus.MustRegister(parser.ServerWorkerLatency)
-	prometheus.MustRegister(parser.SpeechWorkerCount)
+	prometheus.MustRegister(parser.AvailableWorkers)
 
 	// Spawn go routines to watch and parse server and worker pod logs
 	go getContainerLogs(clientset, namespace, decodingSdkServerPodName)

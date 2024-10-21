@@ -23,7 +23,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "10.4.2"
+      "version": "11.2.0"
     },
     {
       "type": "datasource",
@@ -89,6 +89,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -132,7 +133,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 9,
+        "h": 7,
         "w": 24,
         "x": 0,
         "y": 0
@@ -157,8 +158,8 @@
             "uid": "${DS_THANOS_QUERIER}"
           },
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "server_requests_total",
+          "editorMode": "code",
+          "expr": "(sum(decoding_requests_failed) by (type) + sum(decoding_requests_successful) by (type))",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -188,6 +189,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -236,7 +238,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 9
+        "y": 7
       },
       "id": 2,
       "options": {
@@ -258,7 +260,7 @@
             "uid": "${DS_THANOS_QUERIER}"
           },
           "editorMode": "code",
-          "expr": "sum(decoding_requests_successful_total) / sum(server_requests_total) * 100",
+          "expr": "1535 / (sum(decoding_requests_failed) by (type) + sum(decoding_requests_successful) by (type)) * 100",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -285,6 +287,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -333,7 +336,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 9
+        "y": 7
       },
       "id": 3,
       "options": {
@@ -355,7 +358,7 @@
             "uid": "${DS_THANOS_QUERIER}"
           },
           "editorMode": "code",
-          "expr": "sum(decoding_requests_failed_total) / sum(server_requests_total) * 100",
+          "expr": "0 / (sum(decoding_requests_failed) by (type) + sum(decoding_requests_successful) by (type)) * 100",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -382,6 +385,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -429,7 +433,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 17
+        "y": 15
       },
       "id": 4,
       "options": {
@@ -478,6 +482,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -524,7 +529,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 17
+        "y": 15
       },
       "id": 7,
       "options": {
@@ -555,196 +560,6 @@
         }
       ],
       "title": "99th Percentile Latency",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_THANOS_QUERIER}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 25
-      },
-      "id": 8,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_THANOS_QUERIER}"
-          },
-          "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum(real_time_factor_bucket) by (le))",
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "95th Percentile Real Time Factor",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_THANOS_QUERIER}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 25
-      },
-      "id": 9,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_THANOS_QUERIER}"
-          },
-          "editorMode": "code",
-          "expr": "histogram_quantile(0.99, sum(real_time_factor_bucket) by (le))",
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "99th Percentile Real Time Factor",
       "type": "timeseries"
     },
     {
@@ -785,7 +600,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 33
+        "y": 23
       },
       "id": 5,
       "options": {
@@ -800,7 +615,7 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "10.4.2",
+      "pluginVersion": "11.2.0",
       "targets": [
         {
           "datasource": {
@@ -838,8 +653,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -854,7 +668,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 40
+        "y": 30
       },
       "id": 6,
       "options": {
@@ -869,7 +683,7 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "10.4.2",
+      "pluginVersion": "11.2.0",
       "targets": [
         {
           "datasource": {
@@ -900,6 +714,6 @@
   "timezone": "browser",
   "title": "Decoding SDK dashboard",
   "uid": "cdha9z4nkzk00c",
-  "version": 17,
+  "version": 9,
   "weekStart": ""
 }

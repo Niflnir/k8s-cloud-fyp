@@ -18,24 +18,17 @@ spec:
     - name: moderate-group
       rules:
         - alert: HighRequestFailure
-          expr: sum(increase(decoding_requests_failed_total[5m])) > 10
+          expr: sum(rate(decoding_requests_successful[5m])) / (sum(rate(decoding_requests_failed[5m])) + sum(rate(decoding_requests_successful[5m]))) * 100 > 5
           for: 5m
           labels:
             severity: moderate
           annotations:
-            summary: High number of failed requests on {{ $labels.instance }}
-            description: "The number of failed requests is more than 10 in the past 5 minutes."
+            summary: High number of failed requests in the past 5 minutes
+            description: "The number of failed requests is more than 5% in the past 5 minutes."
         - alert: HighRequestlatency
-          expr: histogram_quantile(0.5, sum(latency_milliseconds_bucket) by (le)) > 1000
+          expr: histogram_quantile(0.5, sum(latency_milliseconds_bucket) by (le)) > 200
           for: 5m
           labels:
             severity: moderate
           annotations:
-            summary: High request latency on {{ $labels.instance }}
-        - alert: HighRealTimeFactor
-          expr: histogram_quantile(0.5, sum(real_time_factor_bucket) by (le)) > 1.5
-          for: 5m
-          labels:
-            severity: moderate
-          annotations:
-            summary: High real time factor on {{ $labels.instance }}
+            summary: High request latency in the past 5 minutes

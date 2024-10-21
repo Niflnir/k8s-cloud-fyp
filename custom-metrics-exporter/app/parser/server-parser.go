@@ -20,28 +20,17 @@ var (
 		Name: "decoding_requests_successful",
 		Help: "Number of successful decoding requests",
 	})
-	SpeechWorkerCount = prometheus.NewGauge(prometheus.GaugeOpts{
-		Name: "speech_worker_count",
+	AvailableWorkers = prometheus.NewGauge(prometheus.GaugeOpts{
+		Name: "available_workers",
 		Help: "Number of speech workers currently available",
-	})
-	RequestDuration = prometheus.NewHistogram(prometheus.HistogramOpts{
-		Name: "request_duration_milliseconds",
-		Help: "Time taken to complete a request",
 	})
 	ServerWorkerLatency = prometheus.NewHistogram(prometheus.HistogramOpts{
 		Name:    "latency_milliseconds",
 		Help:    "Request latency between server and worker",
 		Buckets: []float64{30, 60, 90, 120, 150, 180, 210, 240, 270, 300, float64(math.Inf(1))},
 	})
-	RealTimeFactor = prometheus.NewHistogram(prometheus.HistogramOpts{
-		Name:    "real_time_factor",
-		Help:    "Real Time Factor of decoding request",
-		Buckets: []float64{1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, float64(math.Inf(1))},
-	})
-	OpenConnectionTimestampMap = map[string]string{}
-	PauseInstanceTimestampMap  = map[string]string{}
-	AudioStartTimestamp        string
-	// AudioEndTimestamp          string
+	OpenConnectionTimestampMap   = map[string]string{}
+	PauseInstanceTimestampMap    = map[string]string{}
 	ForwardingClientTimestampMap = map[string]string{}
 )
 
@@ -71,7 +60,7 @@ func parseAvailableWorkersLog(logLine string) bool {
 	}
 
 	fmt.Println("Worker count: ", workerCount)
-	SpeechWorkerCount.Set(float64(workerCount))
+	AvailableWorkers.Set(float64(workerCount))
 	return true
 }
 
@@ -92,10 +81,8 @@ func parseSendingEventToClientLog(logLine string) bool {
 		9: Not available. All recognizer processes are currently in use and recognition cannot be performed.
 	*/
 	if statusCode == "0" {
-		// fmt.Println("Decoding request successful (requestId:", requestId, ")")
 		DecodingRequestsSuccessful.Inc()
 	} else {
-		// fmt.Println("Decoding request failed (requestId:", requestId, ", status:", statusCode, ")")
 		DecodingRequestsFailed.Inc()
 	}
 
@@ -122,18 +109,10 @@ func updateMetricsOnConnectionCloseLog(logLine string) {
 		return
 	}
 
-	closeConnectionTimestamp, requestId := match[1], match[2]
+	_, requestId := match[1], match[2]
 
-	openConnectionTimestamp, openConnectionTimestampExists := OpenConnectionTimestampMap[requestId]
 	pauseInstanceTimestamp, pauseInstanceTimestampExists := PauseInstanceTimestampMap[requestId]
 	fowardingClientTimestamp, forwardingClientTimestampExists := ForwardingClientTimestampMap[requestId]
-
-	// Request duration = Close connection timestamp (server) - Open connection timestamp (server)
-	if openConnectionTimestampExists {
-		requestDuration := utils.CalculateDurationMilliseconds(openConnectionTimestamp, closeConnectionTimestamp)
-		fmt.Println("Request Duration: ", requestDuration)
-		RequestDuration.Observe(float64(requestDuration))
-	}
 
 	// Latency between server and worker = Forwarding client message timestamp (server) - Pause instance timestamp (worker)
 	if forwardingClientTimestampExists && pauseInstanceTimestampExists {
